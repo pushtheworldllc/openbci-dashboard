@@ -2,7 +2,7 @@
 angular.module('bciDashboard')
     .directive('bciTimeSeries', function () {
         return {
-            template: '<canvas id="timeSeries" width="600" height="400"></canvas>',
+            templateUrl: 'components/time-series/time-series.html',
             scope: {
                 eventName: '@'
             },
@@ -30,26 +30,37 @@ angular.module('bciDashboard')
                     millisPerLine: 3000,
                     grid: {
                         fillStyle: '#333333',
-                        strokeStyle: 'rgba(0,0,0,0.3)',
-                        sharpLines: true,
-                        verticalSections: channels.length + 1,
-                        borderVisible: false
+                        strokeStyle: 'rgba(255,255,255,0.05)',
+                        sharpLines: false,
+                        verticalSections: channels.length,
+                        borderVisible: true
+                    },
+                    labels: {
+                        disabled: true
                     },
                     maxValue: channels.length * 2,
                     minValue: 0
                 });
 
                 // 200 = 50 samples * 4 milliseconds (sample rate)
-                smoothie.streamTo(element[0].firstChild, 40);
+                smoothie.streamTo(element[0].querySelector('canvas'), 40);
 
                 channels.forEach(function (channel, i) {
                     smoothie.addTimeSeries(channel, { strokeStyle: colors[i].strokeColor });
                 });
 
+
                 socket.on(scope.eventName, function (data) {
-                    //console.log(data.data);
-                    channels.forEach(function (channel, i) {
-                        channels[i].append(new Date().getTime(), data.data[i][0]);
+
+                    scope.$evalAsync(function () {
+                        scope.amplitudes = data.amplitudes;
+                        scope.timeline = data.timeline;
+                    });
+
+                    channels.forEach(function (channel, channelNumber) {
+                        data.data[channelNumber].forEach(function (amplitude) {
+                            channel.append(new Date().getTime(), amplitude);
+                        });
                     });
                 });
 
