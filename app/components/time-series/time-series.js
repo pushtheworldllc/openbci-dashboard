@@ -2,7 +2,7 @@
 angular.module('bciDashboard')
     .directive('bciTimeSeries', function () {
         return {
-            template: '<canvas id="timeSeries" width="1000" height="500"></canvas>',
+            template: '<canvas id="timeSeries" width="600" height="400"></canvas>',
             scope: {
                 eventName: '@'
             },
@@ -47,10 +47,9 @@ angular.module('bciDashboard')
                 });
 
                 socket.on(scope.eventName, function (data) {
-                    channels.forEach(function (channel, channelNumber) {
-                        data.data[channelNumber].forEach(function (amplitude) {
-                            channel.append(new Date().getTime(), amplitude);
-                        });
+                    //console.log(data.data);
+                    channels.forEach(function (channel, i) {
+                        channels[i].append(new Date().getTime(), data.data[i][0]);
                     });
                 });
 
