@@ -16,7 +16,8 @@ io.on('connection', function(socket){
 
 // OpenBCI
 var board = new OpenBCIBoard.OpenBCIBoard({
-    verbose: true
+    verbose: true,
+    simulatorSampleRate:250
 });
 
 board.autoFindOpenBCIBoard()
@@ -102,7 +103,7 @@ var hpFilterCoeffs = iirCalculator.highpass({
     preGain: false // adds one constant multiplication for highpass and lowpass
     // k = (1 + cos(omega)) * 0.5 / k = 1 with preGain == false
 });
-  
+
 var hpFilter = new Fili.IirFilter(hpFilterCoeffs);
 
 var lpFilterCoeffs = iirCalculator.lowpass({
@@ -163,6 +164,14 @@ function onSample (sample) {
             return (index % 4 === 0 || index === (labels.length - 1)) ? label + ' Hz' : '';
         });
 
+        io.emit('bci:fftunity', {
+            theta: spectrumsByBand.theta.spectrums,
+            delta: spectrumsByBand.delta.spectrums,
+            alpha: spectrumsByBand.alpha.spectrums,
+            beta: spectrumsByBand.beta.spectrums,
+            gamma: spectrumsByBand.gamma.spectrums
+        });
+
         io.emit('bci:fft', {
             data: spectrums,
             theta: spectrumsByBand.theta.spectrums,
@@ -214,30 +223,30 @@ function onSample (sample) {
 
         grid = topogrid.create(pos_x,pos_y,sample.channelData,grid_params);
         var grid_flat = [].concat.apply([], grid);
-        
+
         //**********//
-        
+
         var Xs = signals.map(function (channel, i) {
-            var x = [3,7,2,8,0,10,3,7]; 
+            var x = [3,7,2,8,0,10,3,7];
             return channel.map(function (volt) {
                 return volt + (x[i]);
             });
         });
-        
+
         var Ys = signals.map(function (channel, i) {
-            var y = [0,0,3,3,8,8,10,10]; 
+            var y = [0,0,3,3,8,8,10,10];
             return channel.map(function (volt) {
                 return volt + (y[i]);
             });
         });
-        
+
         var plotX = [].concat.apply([], Xs).sort(function (a, b) {
             return a - b;
         });
         var plotY = [].concat.apply([], Ys).sort(function (a, b) {
             return a - b;
         });
-        
+
         //**********//
 
         io.emit('bci:topo', {
