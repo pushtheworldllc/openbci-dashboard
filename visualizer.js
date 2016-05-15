@@ -33,7 +33,7 @@ http.listen(3060, function () {
 // OpenBCI
 var board = new OpenBCIBoard.OpenBCIBoard({
     verbose: true,
-    simulatorSampleRate: 10
+    simulatorSampleRate: 250
 });
 
 board.autoFindOpenBCIBoard()
@@ -138,7 +138,7 @@ function onSample (sample) {
 
     sampleNumber++;
 
-    console.log('sample', sample);
+    // console.log('sample', sample);
 
     Object.keys(sample.channelData).forEach(function (channel, i) {
         signals[i].push(sample.channelData[channel]);
@@ -178,28 +178,49 @@ function onSample (sample) {
         // Skip every 4, add unit
         labels = labels.map(function (label, index, labels) {
             return (index % 4 === 0 || index === (labels.length - 1)) ? label + ' Hz' : '';
-        });
+        })
+        //
+        var average = (arr) => {
+            var sum = 0;
+            for (var i = 0; i < 8; i++) {
+                sum += arr[i];
+            }
+            return sum / arr.length;
+        }
+
+        var avgs = {
+            alpha: jStat.mean(spectrumsByBand.alpha.spectrums[0]),
+            beta: jStat.mean(spectrumsByBand.beta.spectrums[0]),
+            gamma: jStat.mean(spectrumsByBand.gamma.spectrums[0]),
+            delta: jStat.mean(spectrumsByBand.delta.spectrums[0]),
+            theta: jStat.mean(spectrumsByBand.theta.spectrums[0])
+        }
+        console.log('avgs',avgs);
 
         io.emit('bci:fft:theta', {
             theta: spectrumsByBand.theta.spectrums
+            // avg: average(spectrumsByBand.theta.spectrums)
         });
 
         io.emit('bci:fft:delta', {
             delta: spectrumsByBand.delta.spectrums
+            // delta: average(spectrumsByBand.delta.spectrums)
         });
 
         io.emit('bci:fft:alpha', {
             alpha: spectrumsByBand.alpha.spectrums
+            // alpha: average(spectrumsByBand.alpha.spectrums)
         });
 
         io.emit('bci:fft:beta', {
             beta: spectrumsByBand.beta.spectrums
+            // beta: average(spectrumsByBand.beta.spectrums)
         });
 
         io.emit('bci:fft:gamma', {
             gamma: spectrumsByBand.gamma.spectrums
+            // gamma: average(spectrumsByBand.gamma.spectrums)
         });
-
 
         io.emit('bci:fft', {
             data: spectrums,
