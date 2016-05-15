@@ -119,7 +119,7 @@ var hpFilterCoeffs = iirCalculator.highpass({
     preGain: false // adds one constant multiplication for highpass and lowpass
     // k = (1 + cos(omega)) * 0.5 / k = 1 with preGain == false
 });
-  
+
 var hpFilter = new Fili.IirFilter(hpFilterCoeffs);
 
 var lpFilterCoeffs = iirCalculator.lowpass({
@@ -179,6 +179,27 @@ function onSample (sample) {
         labels = labels.map(function (label, index, labels) {
             return (index % 4 === 0 || index === (labels.length - 1)) ? label + ' Hz' : '';
         });
+
+        io.emit('bci:fft:theta', {
+            theta: spectrumsByBand.theta.spectrums
+        });
+
+        io.emit('bci:fft:delta', {
+            delta: spectrumsByBand.delta.spectrums
+        });
+
+        io.emit('bci:fft:alpha', {
+            alpha: spectrumsByBand.alpha.spectrums
+        });
+
+        io.emit('bci:fft:beta', {
+            beta: spectrumsByBand.beta.spectrums
+        });
+
+        io.emit('bci:fft:gamma', {
+            gamma: spectrumsByBand.gamma.spectrums
+        });
+
 
         io.emit('bci:fft', {
             data: spectrums,

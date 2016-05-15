@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";AAAA,4BAA0B,eAAe,CAAC;AAAlC,gDAAkC;AAC1C,oCAAiC,uBAAuB,CAAC;AAAjD,sEAAiD","sourcesContent":["export {environment} from './environment';\nexport {DashboardComponent} from './dashboard.component';\n"]}
