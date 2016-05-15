@@ -18,6 +18,8 @@
 
         <script src="lib/chroma.min.js"></script>
 
+        <script src="js/phaser.min.js"></script>
+
         <script src="components/frequency/frequency.js"></script>
         <script src="components/frequency-band/frequency-band.js"></script>
         <script src="components/time-series/time-series.js"></script>
@@ -63,6 +65,10 @@
 
             <section class="row" ng-if="mode == 'topo'">
                 <bci-topo event-name="bci:topo"  class="block block-50"></bci-topo>
+            </section>
+
+            <section class="row" ng-if="mode == 'topo'">
+                <bci-trainer event-name="bci:time"  class="block block-50"></bci-trainer>
             </section>
 
         </main>

@@ -32,7 +32,8 @@ http.listen(3060, function () {
 
 // OpenBCI
 var board = new OpenBCIBoard.OpenBCIBoard({
-    verbose: true
+    verbose: true,
+    simulatorSampleRate: 10
 });
 
 board.autoFindOpenBCIBoard()
